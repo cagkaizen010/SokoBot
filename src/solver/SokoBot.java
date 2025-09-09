@@ -2,6 +2,11 @@ package solver;
 
 // import reader.*;
 import java.util.ArrayList;
+// import java.util.Arrays;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SokoBot {
 
@@ -44,92 +49,108 @@ public class SokoBot {
 
     */
 
+    Map<Character, List<int[]>> levelMap = new HashMap<>();
 
   private class State {
-    public char[][] playerPos;
-    public char[][] boxPos;
-    public char[][] goalPos;
+    public int[] playerPos;
+    public List<int[]> boxPos;
+    public List<int[]> goalPos;
 
 
     // Define state:
     //  - Position of player
+    //    - Single point
     //  - Position of box
-    //  - Position of goal
-    public State(char[][] playerPos, char[][] boxPos, char[][] goalPos){
-        this.playerPos = playerPos; // Store current coordinates of player
-        this.boxPos= boxPos;  // Store current coordinates of box
-        this.goalPos= goalPos;  // Store current coordinates of goal
+    //    - Multiple points 
+    public State(int[] playerPos, int[][] boxPos){
+        // this.playerPos.add(playerPos); // Store current coordinates of player
+        // this.boxPos= boxPos;  // Store current coordinates of box
     }
   }
 
-  private ArrayList<int[]> walls = new ArrayList<>(); 
-  private ArrayList<int[]> goals = new ArrayList<>();
-  // private int[] boxes =[];
-  
+  /*
+    Inputs:
+      - Current position of character
+      - 
+  */
+  private void calc_reach() {
 
-  public int setMapData(char[][] mapData) {
-
-    // for( int j = 0; j < mapData.length; j++){       // rows
-    //   for(int i = 0; i < mapData[j].length; i++ )   // cols
-    //     System.out.print(mapData[j][i]);
-    //   System.out.println("");
-    // }
-
-
-    for(int i = 0; i < mapData.length; i++)
-      for(int j = 0; j < mapData[i].length; j++ ){
-        // if(mapData[i][j] == '#' ) System.out.println(i+ " " + j);
-        // if(mapData[i][j] == '.') System.out.println("goal point: " + i + " " + j);
-
-
-        if(mapData[i][j] == '#' ){
-          int[] input = {i, j};
-          walls.add(input);
-
-        }
-        if(mapData[i][j] == '.') {
-          // int[] input = {i, j};
-          goals.add(Arrays.asList(i, j));
-        }
-      }
-
-    return 0;
   }
+
+  // public void setMapData(char[][] mapData) {
+
+  //   for(int i = 0; i < mapData.length; i++)
+  //     for(int j = 0; j < mapData[i].length; j++ ){
+
+  //       if(mapData[i][j] == '#' )
+  //         walls.add(new int[]{i,j});
+
+  //       if(mapData[i][j] == '.') 
+  //         goals.add(new int[]{i,j });
+
+  //     }   
+  // }
 
   public void getItemsData(char[][] itemsData){
     for(int i = 0; i < itemsData.length; i++)
       System.out.println(itemsData[i]);
   }
 
+  public void retrieveLevelData(int width, int height, char[][] mapData, char[][] itemsData){
+    
+    for (int i = 0; i < height; i++){
+      for (int j = 0; j < width; j++ ){
+        char c_m = mapData[i][j];
+        char c_i = itemsData[i][j];
+        if( c_m != ' ' || c_i != ' '){
+          if( c_m != ' ') levelMap.computeIfAbsent(c_m, k -> new ArrayList<>()).add(new int[]{i, j});
+          if( c_i != ' ') levelMap.computeIfAbsent(c_i, k -> new ArrayList<>()).add(new int[]{i, j});
+        }
+
+      }
+    }
+  }
+
 
 
   public String solveSokobanPuzzle(int width, int height, char[][] mapData, char[][] itemsData) {
-    /*
-     * YOU NEED TO REWRITE THE IMPLEMENTATION OF THIS METHOD TO MAKE THE BOT SMARTER
-     */
-    /*
-     * Default stupid behavior: Think (sleep) for 3 seconds, and then return a
-     * sequence
-     * that just moves left and right repeatedly.
-     */
-
-
-
+    
     try {
-      // Thread.sleep(3000);
-      // System.out.println(mapData[1][1]);
-      // getMapData(mapData[][]);
-      setMapData(mapData);
 
-      for(int i = 0; i < goals.size(); i++){
+      // setMapData(mapData);
 
-        for(int j: goals.get(i)) System.out.print(j);
-        System.out.println(goals.contains(Arrays.asList(3,4)));
+      retrieveLevelData(width, height, mapData, itemsData);
+      
+
+      for (Map.Entry<Character, List<int[]>> entry : levelMap.entrySet()) {
+        char symbol = entry.getKey();
+        List<int[]> coords = entry.getValue();
+
+        System.out.print(symbol + " -> ");
+        for (int[] pos: coords) {
+          System.out.print("(" + pos[0] + ", " + pos[1] + ")");
+        }
+        System.out.println();
       }
+      
+        for(int[] pos: levelMap.get('@')){
+          System.out.println("("+ pos[0]+ ", "+ pos[1] +")");
+        }
+      
+      
 
+      // for(int i = 0; i < goals.size(); i++){
 
-      // System.out.println(walls)
-      // getItemsData(itemsData);
+      //   // for(int j: goals.get(i)) System.out.print(j);
+      //   System.out.println(goals.at());
+      // }
+      
+      /*
+       * Printing out variables of type List<int[]>
+       */
+      // for (int[] arr : goals)     
+      //   System.out.println(Arrays.toString(arr));
+
 
     } catch (Exception ex) {
       ex.printStackTrace();
