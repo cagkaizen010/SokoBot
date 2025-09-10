@@ -1,12 +1,16 @@
 package solver;
 
 // import reader.*;
+import solver.Motion.*;
 import java.util.ArrayList;
 // import java.util.Arrays;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SokoBot {
 
@@ -49,24 +53,39 @@ public class SokoBot {
 
     */
 
-    Map<Character, List<int[]>> levelMap = new HashMap<>();
+
 
   private class State {
-    public int[] playerPos;
-    public List<int[]> boxPos;
-    public List<int[]> goalPos;
-
+    public Position playerPos;
+    public Set<Position> boxPos;
 
     // Define state:
     //  - Position of player
     //    - Single point
     //  - Position of box
     //    - Multiple points 
-    public State(int[] playerPos, int[][] boxPos){
-        // this.playerPos.add(playerPos); // Store current coordinates of player
-        // this.boxPos= boxPos;  // Store current coordinates of box
+    public State(Position playerPos , Set<Position> boxPos){ 
+      this.playerPos = playerPos; // Store current coordinates of player
+      this.boxPos= new HashSet<>(boxPos);  // Store current coordinates of box
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+      if (this == obj) return true;
+      if ( !(obj instanceof State) ) return false;
+      State other = (State) obj;
+      return playerPos.equals(other.playerPos) && boxPos.equals(other.boxPos);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(playerPos, boxPos);
     }
   }
+
+
+
+
 
   /*
     Inputs:
@@ -78,26 +97,19 @@ public class SokoBot {
   }
 
   // public void setMapData(char[][] mapData) {
-
   //   for(int i = 0; i < mapData.length; i++)
   //     for(int j = 0; j < mapData[i].length; j++ ){
-
   //       if(mapData[i][j] == '#' )
   //         walls.add(new int[]{i,j});
-
   //       if(mapData[i][j] == '.') 
   //         goals.add(new int[]{i,j });
-
   //     }   
   // }
 
-  public void getItemsData(char[][] itemsData){
-    for(int i = 0; i < itemsData.length; i++)
-      System.out.println(itemsData[i]);
-  }
 
-  public void retrieveLevelData(int width, int height, char[][] mapData, char[][] itemsData){
+  public void retrieveLevelData(int width, int height, char[][] mapData, char[][] itemsData, Map<Character, List<int[]>> levelMap){
     
+    // Insert level data into a map
     for (int i = 0; i < height; i++){
       for (int j = 0; j < width; j++ ){
         char c_m = mapData[i][j];
@@ -106,7 +118,6 @@ public class SokoBot {
           if( c_m != ' ') levelMap.computeIfAbsent(c_m, k -> new ArrayList<>()).add(new int[]{i, j});
           if( c_i != ' ') levelMap.computeIfAbsent(c_i, k -> new ArrayList<>()).add(new int[]{i, j});
         }
-
       }
     }
   }
@@ -114,44 +125,31 @@ public class SokoBot {
 
 
   public String solveSokobanPuzzle(int width, int height, char[][] mapData, char[][] itemsData) {
-    
     try {
+      Map<Character, List<int[]>> levelMap = new HashMap<>();
+      retrieveLevelData(width, height, mapData, itemsData, levelMap);
 
-      // setMapData(mapData);
+      /*
+       *  Output Map data
+       */
+      // for (Map.Entry<Character, List<int[]>> entry : levelMap.entrySet()) {
+      //   char symbol = entry.getKey();
+      //   List<int[]> coords = entry.getValue();
 
-      retrieveLevelData(width, height, mapData, itemsData);
-      
-
-      for (Map.Entry<Character, List<int[]>> entry : levelMap.entrySet()) {
-        char symbol = entry.getKey();
-        List<int[]> coords = entry.getValue();
-
-        System.out.print(symbol + " -> ");
-        for (int[] pos: coords) {
-          System.out.print("(" + pos[0] + ", " + pos[1] + ")");
-        }
-        System.out.println();
-      }
-      
-        for(int[] pos: levelMap.get('@')){
-          System.out.println("("+ pos[0]+ ", "+ pos[1] +")");
-        }
-      
-      
-
-      // for(int i = 0; i < goals.size(); i++){
-
-      //   // for(int j: goals.get(i)) System.out.print(j);
-      //   System.out.println(goals.at());
+      //   System.out.print(symbol + " -> ");
+      //   for (int[] pos: coords) {
+      //     System.out.print("(" + pos[0] + ", " + pos[1] + ")");
+      //   }
+      //   System.out.println();
       // }
+     
       
       /*
-       * Printing out variables of type List<int[]>
+       * Output the player position
        */
-      // for (int[] arr : goals)     
-      //   System.out.println(Arrays.toString(arr));
-
-
+      // for(int[] pos: levelMap.get('@')){
+      //   System.out.println("("+ pos[0]+ ", "+ pos[1] +")");
+      // }
     } catch (Exception ex) {
       ex.printStackTrace();
     }
