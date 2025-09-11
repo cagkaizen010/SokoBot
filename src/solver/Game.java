@@ -77,7 +77,7 @@ public class Game {
   }
 
   public List<Move> retrieveSuccessors(State state, Set<Position> walls){
-        List<Move> move_list = new ArrayList<Move>();
+        List<Move> move_list = new ArrayList<>();
         // List<Move> move_list = new ArrayList();
         
         for (Direction dir: Direction.values()){
@@ -92,7 +92,7 @@ public class Game {
   }
 
   public static boolean isGoal(State state, Set<Position> goals){
-        System.out.println("Goal found? " + state.boxPos.equals(goals));
+        // System.out.println("Goal found? " + state.boxPos.equals(goals));
 
         // System.out.println("State: " + state.boxPos);
         // System.out.println("Goal: "  );
@@ -103,12 +103,13 @@ public class Game {
 
 
   public List<Direction> solve(State startState, Set<Position> walls, Set<Position> goals){
+          
           PriorityQueue<Node> frontier = new PriorityQueue<>(Comparator.comparingInt( n -> n.priority));
           Set<State> visited = new HashSet<>();
 
           frontier.add(new Node(startState, new ArrayList<>(), heuristic(startState, goals)));
 
-          System.out.println("Traversing frontier...");
+          // System.out.println("Traversing frontier...");
           while(!frontier.isEmpty()){
             System.out.println("Still traversing frontier...");
                   Node node = frontier.poll();
@@ -121,6 +122,8 @@ public class Game {
 
                   for(Move move : retrieveSuccessors(current, walls)){
                     if(!visited.contains(move.state)) {
+
+
                       List<Direction> newPath = new ArrayList<>(node.path);
                       newPath.add(move.dir);
 
@@ -129,7 +132,7 @@ public class Game {
                     }
               }      
           }
-          System.out.println("No solution found :(");
+          // System.out.println("No solution found :(");
           return null; // no solution
   }
 
@@ -144,7 +147,7 @@ public class Game {
       sum += min_distance;
     }
 
-    System.out.println("Heuristic Value: " + sum);
+    // System.out.println("Heuristic Value: " + sum);
     return sum;
   }
 

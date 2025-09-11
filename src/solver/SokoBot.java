@@ -124,7 +124,15 @@ public class SokoBot {
 
       output = game.solve(state, walls, goals);
 
-      System.out.println(output);
+      String outputString ="";
+      for(Direction i :output ){
+        // System.out.println(i);
+        outputString += i.toString();
+      }
+
+      System.out.println(outputString);
+      return outputString;
+      // System.out.println(output);
 
 
       // System.out.println("Goal Positions");

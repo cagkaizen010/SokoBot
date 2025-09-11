@@ -32,7 +32,7 @@ public class Motion {
   }
 
   public enum Direction{
-    UP(-1, 0), DOWN(1, 0), LEFT(-1, 0), RIGHT(0,1);
+    u(-1, 0), d(1, 0), l(0, -1), r(0,1);
     public int x_dir;
     public int y_dir;
 
