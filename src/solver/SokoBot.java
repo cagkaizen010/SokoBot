@@ -2,6 +2,7 @@ package solver;
 
 // import reader.*;
 import solver.Motion.*;
+import solver.Game.*;
 import java.util.ArrayList;
 // import java.util.Arrays;
 import java.util.Arrays;
@@ -55,56 +56,8 @@ public class SokoBot {
 
 
 
-  private class State {
-    public Position playerPos;
-    public Set<Position> boxPos;
-
-    // Define state:
-    //  - Position of player
-    //    - Single point
-    //  - Position of box
-    //    - Multiple points 
-    public State(Position playerPos , Set<Position> boxPos){ 
-      this.playerPos = playerPos; // Store current coordinates of player
-      this.boxPos= new HashSet<>(boxPos);  // Store current coordinates of box
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) return true;
-      if ( !(obj instanceof State) ) return false;
-      State other = (State) obj;
-      return playerPos.equals(other.playerPos) && boxPos.equals(other.boxPos);
-    }
-
-    @Override
-    public int hashCode() {
-      return Objects.hash(playerPos, boxPos);
-    }
-  }
 
 
-
-
-
-  /*
-    Inputs:
-      - Current position of character
-      - 
-  */
-  private void calc_reach() {
-
-  }
-
-  // public void setMapData(char[][] mapData) {
-  //   for(int i = 0; i < mapData.length; i++)
-  //     for(int j = 0; j < mapData[i].length; j++ ){
-  //       if(mapData[i][j] == '#' )
-  //         walls.add(new int[]{i,j});
-  //       if(mapData[i][j] == '.') 
-  //         goals.add(new int[]{i,j });
-  //     }   
-  // }
 
 
   public void retrieveLevelData(int width, int height, char[][] mapData, char[][] itemsData, Map<Character, List<int[]>> levelMap){
@@ -126,8 +79,61 @@ public class SokoBot {
 
   public String solveSokobanPuzzle(int width, int height, char[][] mapData, char[][] itemsData) {
     try {
+      Motion motion = new Motion();
+      Game game = new Game();
       Map<Character, List<int[]>> levelMap = new HashMap<>();
+      List<Motion.Direction> output;
       retrieveLevelData(width, height, mapData, itemsData, levelMap);
+
+      // Loading player position
+
+
+      // int x=-1, y=-1;
+      Game.State state;
+      Motion.Position player = motion.new Position(-1, -1);
+      Set<Motion.Position> boxes = new HashSet<Motion.Position>();
+      Set<Motion.Position> walls = new HashSet<Motion.Position>();
+      Set<Motion.Position> goals = new HashSet<Motion.Position>();
+
+      // Load player position
+      for(int[] i: levelMap.get('@')){
+        // x= i[0]; y=i[1];
+        player.x = i[0];
+        player.y = i[1];
+      }
+
+      // Load box positions
+      for(int[] i: levelMap.get('$')){
+        Motion.Position temp = motion.new Position(i[0], i[1]);
+        boxes.add(temp);
+      }
+
+      // Load wall positions
+      for(int[] i : levelMap.get('#') ){
+        Motion.Position temp = motion.new Position(i[0], i[1]);
+        walls.add(temp);
+      }
+
+      // Load goal positions
+      for(int[] i : levelMap.get('.') ){
+        Motion.Position temp = motion.new Position(i[0], i[1]);
+        goals.add(temp);
+      }
+
+      state = game.new State(player, boxes);
+
+      output = game.solve(state, walls, goals);
+
+      System.out.println(output);
+
+
+      // System.out.println("Goal Positions");
+      // for(Motion.Position i : goals){
+      //   System.out.println(i.x + ", " +i.y);
+      // }
+
+
+
 
       /*
        *  Output Map data

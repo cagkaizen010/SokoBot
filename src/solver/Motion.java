@@ -1,8 +1,9 @@
 package solver;
+import solver.Game.*;
 import java.util.*;
 
 public class Motion {
-    public class Position{
+  public class Position{
     public int x;
     public int y;
 
@@ -40,4 +41,23 @@ public class Motion {
       this.y_dir = y_dir;
     }
   }
+
+
+// Check here as implementation continues
+  public static boolean isValidMove(State state, Direction dir, Set<Position> walls){
+    Position next_pos = state.playerPos.move(dir);
+
+    if(walls.contains(next_pos)) return false;
+
+    if(state.boxPos.contains(next_pos)){
+      Position next_box = next_pos.move(dir);
+      return (!walls.contains(next_box) && !state.boxPos.contains(next_box));
+    };
+
+    return true;
+  }
+
+
+
+
 }
