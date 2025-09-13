@@ -126,44 +126,13 @@ public class SokoBot {
 
       String outputString ="";
       for(Direction i :output ){
-        // System.out.println(i);
+        System.out.println(i);
         outputString += i.toString();
       }
 
       System.out.println(outputString);
       return outputString;
-      // System.out.println(output);
 
-
-      // System.out.println("Goal Positions");
-      // for(Motion.Position i : goals){
-      //   System.out.println(i.x + ", " +i.y);
-      // }
-
-
-
-
-      /*
-       *  Output Map data
-       */
-      // for (Map.Entry<Character, List<int[]>> entry : levelMap.entrySet()) {
-      //   char symbol = entry.getKey();
-      //   List<int[]> coords = entry.getValue();
-
-      //   System.out.print(symbol + " -> ");
-      //   for (int[] pos: coords) {
-      //     System.out.print("(" + pos[0] + ", " + pos[1] + ")");
-      //   }
-      //   System.out.println();
-      // }
-     
-      
-      /*
-       * Output the player position
-       */
-      // for(int[] pos: levelMap.get('@')){
-      //   System.out.println("("+ pos[0]+ ", "+ pos[1] +")");
-      // }
     } catch (Exception ex) {
       ex.printStackTrace();
     }

@@ -44,6 +44,8 @@ public class Motion {
 
 
 // Check here as implementation continues
+//
+// NEEDS DEADLOCK DETECTION
   public static boolean isValidMove(State state, Direction dir, Set<Position> walls){
     Position next_pos = state.playerPos.move(dir);
 
