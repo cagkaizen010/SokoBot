@@ -125,8 +125,13 @@ public class SokoBot {
       output = game.solve(state, walls, goals);
 
       String outputString ="";
+      // outputString = "lurrrdlddrrrdlrddluulrrulldlldllurrrrurdllluruuulldrlulldrrurrdddrdrrulldludrrrddluurulldlldllurrrrurdllluruurullldrurdddrdrrulldluuurullrdddrdrrddluurulldluuurulddddldllurrrrurrddlurulldluuu";
+      if(output == null){
+        System.out.println("output is empty");
+      }
+      else 
       for(Direction i :output ){
-        System.out.println(i);
+        // System.out.println(i);
         outputString += i.toString();
       }
 

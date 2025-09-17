@@ -6,6 +6,9 @@ import java.util.*;
 import static solver.Motion.*;
 
 public class Game {
+
+    Scanner scanner = new Scanner(System.in);
+
     public class Move {
       public State state;
       public Direction dir;
@@ -16,6 +19,7 @@ public class Game {
       }
     }
 
+    
     public class Node {
       public State state;
       public List<Direction> path; 
@@ -28,21 +32,18 @@ public class Game {
       }
     }
 
-
-
+    /*
+     * playerPos: Position of player
+     * boxesPos: Position of all boxes in the game.
+     */
     public class State {
         public Position playerPos;
-        public Set<Position> boxPos;
+        public Set<Position> boxesPos;
 
 
-        // Define state:
-        //  - Position of player
-        //    - Single point
-        //  - Position of box
-        //    - Multiple points 
         public State(Position playerPos , Set<Position> boxPos){ 
           this.playerPos = playerPos; // Store current coordinates of player
-          this.boxPos= new HashSet<>(boxPos);  // Store current coordinates of box
+          this.boxesPos= new HashSet<>(boxPos);  // Store current coordinates of box
         }
 
         @Override
@@ -51,12 +52,12 @@ public class Game {
           // System.out.println("(obj instanceof State)? " + (obj instanceof State));
           if ( !(obj instanceof State) ) return false;
           State other = (State) obj;
-          return playerPos.equals(other.playerPos) && boxPos.equals(other.boxPos);
+          return playerPos.equals(other.playerPos) && boxesPos.equals(other.boxesPos);
         }
 
         @Override
         public int hashCode() {
-          return Objects.hash(playerPos, boxPos);
+          return Objects.hash(playerPos, boxesPos);
         }
     }
 
@@ -69,47 +70,79 @@ public class Game {
         sw = walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.l));
         se = walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.r));
 
+   
+
         return nw || ne || sw || se;
       }
 
-      public boolean wallAdjNoGoalCheck(Position boxPos, Set<Position> walls, Set<Position> goals) {
-        boolean up, down, left, right;
+      public boolean wallAdjNoGoalCheck(Position boxPos, Set<Position> walls, Set<Position> goals){
+        boolean hasGoalInLine = false;
+        
+        if (walls.contains(boxPos.move(Direction.u)) || goals.contains(boxPos.move(Direction.u)))
+          hasGoalInLine = true;
 
-        System.out.println("Inside wallAdjNoGoalCheck()");
-        // Check for goal north of box
-        up = walls.contains(boxPos.move(Direction.u)) || goals.contains(boxPos.move(Direction.u));
-        // Check for goal south of box
-        down = walls.contains(boxPos.move(Direction.d)) || goals.contains(boxPos.move(Direction.d));
-        // Check for goal west of box
-        left = walls.contains(boxPos.move(Direction.l)) || goals.contains(boxPos.move(Direction.l));
-        // Check for goal east of box
-        right= walls.contains(boxPos.move(Direction.r)) || goals.contains(boxPos.move(Direction.r));
 
-        return !(up || down || left || right);
+        if (walls.contains(boxPos.move(Direction.d)) || goals.contains(boxPos.move(Direction.d)))
+          hasGoalInLine = true;
+
+
+        if (walls.contains(boxPos.move(Direction.l)) || goals.contains(boxPos.move(Direction.l)))
+          hasGoalInLine = true;
+
+        if (walls.contains(boxPos.move(Direction.r)) || goals.contains(boxPos.move(Direction.r)))
+          hasGoalInLine = true;
+
+        return !hasGoalInLine;
       }
 
       public boolean deadlockCheck(State state, Set<Position> walls, Set<Position> goals){
-        for( Position i : state.boxPos) {
-          if (cornerCheck(i, walls)) return true;
-          /*
-           * Problem is here
-           */
-          if (wallAdjNoGoalCheck(i, walls, goals)) return true;
-        }
+        // int allBoxesCheck = 0;
+        // for( Position i : state.boxesPos) {
 
-        return false;
+        //   if (cornerCheck(i, walls)) {
+        //     allBoxesCheck++;
+        //   }
+        //   /*
+        //    * Problem is here
+        //    */
+        //   // if (wallAdjNoGoalCheck(i, walls, goals)) return true;
+        // }
+
+        // // return false;
+
+        // if (allBoxesCheck == goals.size()){
+        //   // System.out.println("goals.size(): " + goals.size());
+        //   // System.out.println("All boxes deadlocked. Boxes: " + allBoxesCheck );
+          
+        //   // for (Position i : state.boxesPos) {
+        //   //   System.out.println("i: (" + i.x + ", " + i.y +")");
+        //   // }
+
+        //   return true;
+        // }
+        // else {
+        //   // System.out.println("No deadlock found.");
+        //   return false;
+        // }
+
+        for (Position i : state.boxesPos){
+          if (cornerCheck(i, walls) && wallAdjNoGoalCheck(i, walls, goals)) return true;
+
+        }
+          return false;
+
       }
 
     }
 
   public State applyMove(State state, Direction dir){
     Position new_player_pos = state.playerPos.move(dir);
-    Set<Position> new_box_pos = new HashSet<>(state.boxPos);
+    Set<Position> new_box_pos = new HashSet<>(state.boxesPos);
 
     if (new_box_pos.contains(new_player_pos)){
-      Position box_newPos = new_player_pos.move(dir);
+      Position temp = new_player_pos.move(dir);
       new_box_pos.remove(new_player_pos);
-      new_box_pos.add(box_newPos);
+      new_box_pos.add(temp);
     }
 
     return new State(new_player_pos, new_box_pos);
@@ -132,25 +165,31 @@ public class Game {
 
   public static boolean isGoal(State state, Set<Position> goals){
 
-        return state.boxPos.equals(goals);
+        return state.boxesPos.equals(goals);
   }
 
 
   public List<Direction> solve(State startState, Set<Position> walls, Set<Position> goals){
-          
+          // for debugging sake
+
           PriorityQueue<Node> frontier = new PriorityQueue<>(Comparator.comparingInt( n -> n.priority));
           Set<State> visited = new HashSet<>();
+
           DeadlockDetector deadlockDetect = new DeadlockDetector();
 
           frontier.add(new Node(startState, new ArrayList<>(), heuristic(startState, goals)));
 
           // System.out.println("Traversing frontier...");
           while(!frontier.isEmpty()){
-            // System.out.println("Still traversing frontier...");
+
+                  System.out.println("Frontier size: " + frontier.size());
+                  // scanner.nextLine();
+                  // System.out.println("Still traversing frontier...");
                   Node node = frontier.poll();
                   State current = node.state;
 
                   // Skip state if deadlock is detected
+                  // if (deadlockDetect.deadlockCheck(current, walls, goals)) continue;
                   if (deadlockDetect.deadlockCheck(current, walls, goals)) continue;
 
                   if(isGoal(current, goals)) return node.path;
@@ -170,13 +209,15 @@ public class Game {
                     }
               }      
           }
-          // System.out.println("No solution found :(");
+          System.out.println("No solution found :(");
           return null; // no solution
   }
 
+
+  // Manhattan distance heuristic
   public int heuristic(State state, Set<Position> goals){
     int sum = 0;
-    for (Position box : state.boxPos){
+    for (Position box : state.boxesPos){
       int min_distance = Integer.MAX_VALUE;
       for (Position goal: goals){
         int dist = Math.abs(box.x - goal.x) + Math.abs(box.y - goal.y);

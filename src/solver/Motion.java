@@ -40,6 +40,16 @@ public class Motion {
       this.x_dir = x_dir;
       this.y_dir = y_dir;
     }
+
+    public Direction getOpposite() {
+      switch (this) {
+        case u: return d;
+        case d: return u;
+        case l: return r;
+        case r: return l;
+        default:  throw new IllegalStateException("Unexpected value: " + this);
+      }
+    }
   }
 
 
@@ -51,9 +61,9 @@ public class Motion {
 
     if(walls.contains(next_pos)) return false;
 
-    if(state.boxPos.contains(next_pos)){
+    if(state.boxesPos.contains(next_pos)){
       Position next_box = next_pos.move(dir);
-      return (!walls.contains(next_box) && !state.boxPos.contains(next_box));
+      return (!walls.contains(next_box) && !state.boxesPos.contains(next_box));
     };
 
     return true;
