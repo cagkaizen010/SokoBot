@@ -62,13 +62,13 @@ public class Game {
     }
 
     public class DeadlockDetector {
-      public boolean cornerCheck(Position boxPos, Set<Position> walls){
+      public boolean cornerCheck(Position boxPos, Set<Position> boxes, Set<Position> walls, Set<Position> goals){
         boolean nw, ne, se, sw;
         // System.out.println("Inside cornerCheck()");
-        nw = walls.contains(boxPos.move(Direction.u)) && walls.contains(boxPos.move(Direction.l));
-        ne = walls.contains(boxPos.move(Direction.u)) && walls.contains(boxPos.move(Direction.r));
-        sw = walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.l));
-        se = walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.r));
+        nw = (walls.contains(boxPos.move(Direction.u)) && walls.contains(boxPos.move(Direction.l))) && !goals.contains(boxPos);
+        ne = (walls.contains(boxPos.move(Direction.u)) && walls.contains(boxPos.move(Direction.r))) && !goals.contains(boxPos);
+        sw = (walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.l))) && !goals.contains(boxPos);
+        se = (walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.r))) && !goals.contains(boxPos);
 
    
 
@@ -96,40 +96,11 @@ public class Game {
       }
 
       public boolean deadlockCheck(State state, Set<Position> walls, Set<Position> goals){
-        // int allBoxesCheck = 0;
-        // for( Position i : state.boxesPos) {
-
-        //   if (cornerCheck(i, walls)) {
-        //     allBoxesCheck++;
-        //   }
-        //   /*
-        //    * Problem is here
-        //    */
-        //   // if (wallAdjNoGoalCheck(i, walls, goals)) return true;
-        // }
-
-        // // return false;
-
-        // if (allBoxesCheck == goals.size()){
-        //   // System.out.println("goals.size(): " + goals.size());
-        //   // System.out.println("All boxes deadlocked. Boxes: " + allBoxesCheck );
-          
-        //   // for (Position i : state.boxesPos) {
-        //   //   System.out.println("i: (" + i.x + ", " + i.y +")");
-        //   // }
-
-        //   return true;
-        // }
-        // else {
-        //   // System.out.println("No deadlock found.");
-        //   return false;
-        // }
 
         for (Position i : state.boxesPos){
-          if (cornerCheck(i, walls) && wallAdjNoGoalCheck(i, walls, goals)) return true;
-
+          if(cornerCheck(i, state.boxesPos, walls, goals)) return true;
         }
-          return false;
+        return false;
 
       }
 
@@ -189,7 +160,6 @@ public class Game {
                   State current = node.state;
 
                   // Skip state if deadlock is detected
-                  // if (deadlockDetect.deadlockCheck(current, walls, goals)) continue;
                   if (deadlockDetect.deadlockCheck(current, walls, goals)) continue;
 
                   if(isGoal(current, goals)) return node.path;
