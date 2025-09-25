@@ -2,62 +2,15 @@ package solver;
 
 // import reader.*;
 import solver.Motion.*;
-import solver.Game.*;
 import java.util.ArrayList;
 // import java.util.Arrays;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class SokoBot {
-
-    // State? Position of player and boxes
-    // Action? Player moving and colliding with boxes
-    // Cost? Amount of moves player makes
-
-
-    // End points:
-    //  - $ cant move adjacent, END
-    //  - $ can only move in one direction, but . isnt in same axis as goal, END
-    //  - 
-
-    /* Intermediate Actions:
-      - Define reachability()
-        - Player can go to adjacent block
-
-      -- basic actions 
-      - Define move()
-
-      --  used to undo if state cant work
-      - Define unmove()
-
-    */
-
-
-    // Define actions
-    //  - Push
-    //    - When can we push?
-    //      - Reachable by the player
-    //      - Tile opposite of player is empty
-    // public void push(){
-      
-    // }
-
-
-    // BACKTRACKING (naive solution)
-    // This cannot be done through backtracking, explain later.
-    /*
-
-    */
-
-
-
-
-
 
 
   public void retrieveLevelData(int width, int height, char[][] mapData, char[][] itemsData, Map<Character, List<int[]>> levelMap){
@@ -125,7 +78,6 @@ public class SokoBot {
       output = game.solve(state, walls, goals);
 
       String outputString ="";
-      // outputString = "lurrrdlddrrrdlrddluulrrulldlldllurrrrurdllluruuulldrlulldrrurrdddrdrrulldludrrrddluurulldlldllurrrrurdllluruurullldrurdddrdrrulldluuurullrdddrdrrddluurulldluuurulddddldllurrrrurrddlurulldluuu";
       if(output == null){
         System.out.println("output is empty");
       }

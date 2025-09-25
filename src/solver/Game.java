@@ -7,8 +7,6 @@ import static solver.Motion.*;
 
 public class Game {
 
-    Scanner scanner = new Scanner(System.in);
-
     public class Move {
       public State state;
       public Direction dir;
@@ -18,7 +16,6 @@ public class Game {
         this.dir = dir;
       }
     }
-
     
     public class Node {
       public State state;
@@ -70,29 +67,7 @@ public class Game {
         sw = (walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.l))) && !goals.contains(boxPos);
         se = (walls.contains(boxPos.move(Direction.d)) && walls.contains(boxPos.move(Direction.r))) && !goals.contains(boxPos);
 
-   
-
         return nw || ne || sw || se;
-      }
-
-      public boolean wallAdjNoGoalCheck(Position boxPos, Set<Position> walls, Set<Position> goals){
-        boolean hasGoalInLine = false;
-        
-        if (walls.contains(boxPos.move(Direction.u)) || goals.contains(boxPos.move(Direction.u)))
-          hasGoalInLine = true;
-
-
-        if (walls.contains(boxPos.move(Direction.d)) || goals.contains(boxPos.move(Direction.d)))
-          hasGoalInLine = true;
-
-
-        if (walls.contains(boxPos.move(Direction.l)) || goals.contains(boxPos.move(Direction.l)))
-          hasGoalInLine = true;
-
-        if (walls.contains(boxPos.move(Direction.r)) || goals.contains(boxPos.move(Direction.r)))
-          hasGoalInLine = true;
-
-        return !hasGoalInLine;
       }
 
       public boolean deadlockCheck(State state, Set<Position> walls, Set<Position> goals){
@@ -119,29 +94,27 @@ public class Game {
     return new State(new_player_pos, new_box_pos);
   }
 
-  public List<Move> retrieveSuccessors(State state, Set<Position> walls){
+    public List<Move> retrieveSuccessors(State state, Set<Position> walls){
         List<Move> move_list = new ArrayList<>();
-        // List<Move> move_list = new ArrayList();
-        
-        for (Direction dir: Direction.values()){
-                if(isValidMove(state, dir, walls)){
 
-                  State nextState = applyMove(state, dir);
-                  move_list.add(new Move(nextState, dir));
-                }
+        for (Direction dir: Direction.values()){
+
+            if(isValidMove(state, dir, walls)){
+                State nextState = applyMove(state, dir);
+                move_list.add(new Move(nextState, dir));
+            }
         }
 
         return move_list;
-  }
+    }
 
-  public static boolean isGoal(State state, Set<Position> goals){
+    public static boolean isGoal(State state, Set<Position> goals){
 
         return state.boxesPos.equals(goals);
-  }
+    }
 
 
   public List<Direction> solve(State startState, Set<Position> walls, Set<Position> goals){
-          // for debugging sake
 
           PriorityQueue<Node> frontier = new PriorityQueue<>(Comparator.comparingInt( n -> n.priority));
           Set<State> visited = new HashSet<>();
@@ -153,9 +126,7 @@ public class Game {
           // System.out.println("Traversing frontier...");
           while(!frontier.isEmpty()){
 
-                  System.out.println("Frontier size: " + frontier.size());
-                  // scanner.nextLine();
-                  // System.out.println("Still traversing frontier...");
+                  // System.out.println("Frontier size: " + frontier.size());
                   Node node = frontier.poll();
                   State current = node.state;
 
@@ -185,20 +156,20 @@ public class Game {
 
 
   // Manhattan distance heuristic
-  public int heuristic(State state, Set<Position> goals){
-    int sum = 0;
-    for (Position box : state.boxesPos){
-      int min_distance = Integer.MAX_VALUE;
-      for (Position goal: goals){
-        int dist = Math.abs(box.x - goal.x) + Math.abs(box.y - goal.y);
-        min_distance= Math.min(min_distance, dist);
-      }
-      sum += min_distance;
-    }
+    public int heuristic(State state, Set<Position> goals){
+        int sum = 0;
+        for (Position box : state.boxesPos){
+            int min_distance = Integer.MAX_VALUE;
+            for (Position goal: goals){
+                int dist = Math.abs(box.x - goal.x) + Math.abs(box.y - goal.y);
+                min_distance= Math.min(min_distance, dist);
+            }
+            sum += min_distance;
+        }
 
-    // System.out.println("Heuristic Value: " + sum);
-    return sum;
-  }
+        // System.out.println("Heuristic Value: " + sum);
+        return sum;
+    }
 
 
 }
